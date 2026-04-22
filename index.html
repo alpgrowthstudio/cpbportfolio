@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <title>Catalina Pla — Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --gold: #c9a96e;
+            --gold-dim: rgba(201, 169, 110, 0.12);
+            --bg: #05050f;
+            --surface: rgba(7, 7, 20, 0.98);
+        }
+
+        html, body {
+            width: 100%; height: 100%;
+            background: var(--bg);
+            color: #fff;
+            font-family: 'Inter', -apple-system, sans-serif;
+            overflow: hidden;
+        }
+
+        /* ── HEADER ── */
+        .header {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 22px 36px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(5,5,15,0.95) 0%, transparent 100%);
+        }
+        .logo { font-size: 1rem; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: #ffffff; }
+        .logo span { color: rgba(255,255,255,0.3); font-weight: 300; margin-left: 10px; letter-spacing: 0.08em; font-size: 0.7rem; text-transform: none; }
+        .badge {
+            padding: 5px 14px; border: 1px solid rgba(201,169,110,0.22); border-radius: 100px;
+            color: rgba(255,255,255,0.35); font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase;
+        }
+
+        /* ── CANVAS ── */
+        #universe { position: absolute; inset: 0; }
+
+        /* ── HINT ── */
+        .hint {
+            position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+            color: rgba(255,255,255,0.22); font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+            pointer-events: none; animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:.22} 50%{opacity:.55} }
+
+        /* ── OVERLAY ── */
+        .overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px);
+            z-index: 150; opacity: 0; pointer-events: none; transition: opacity 0.35s ease;
+        }
+        .overlay.visible { opacity: 1; pointer-events: all; }
+
+        /* ── PANEL ── */
+        .panel {
+            position: fixed; top: 0; right: -100%;
+            width: min(560px, 100vw); height: 100vh;
+            background: var(--surface);
+            border-left: 1px solid rgba(201,169,110,0.15);
+            z-index: 200;
+            transition: right 0.52s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow-y: auto; padding: 68px 42px 50px;
+            scrollbar-width: thin; scrollbar-color: rgba(201,169,110,0.18) transparent;
+        }
+        .panel.open { right: 0; }
+        .panel::-webkit-scrollbar { width: 3px; }
+        .panel::-webkit-scrollbar-thumb { background: rgba(201,169,110,0.18); border-radius: 2px; }
+
+        .panel-close {
+            position: absolute; top: 20px; right: 20px; width: 34px; height: 34px;
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 50%;
+            background: transparent; color: rgba(255,255,255,0.4); cursor: pointer; font-size: 0.85rem;
+            display: flex; align-items: center; justify-content: center; transition: all 0.22s;
+        }
+        .panel-close:hover { border-color: var(--gold); color: var(--gold); }
+
+        .panel-tag { font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+        .panel-title {
+            font-size: 1.8rem; font-weight: 800; line-height: 1.1; margin-bottom: 26px;
+            background: linear-gradient(135deg, #fff 55%, rgba(201,169,110,0.75));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .panel-body { color: rgba(255,255,255,0.62); font-size: 0.9rem; line-height: 1.8; }
+        .panel-body p { margin-bottom: 10px; }
+
+        /* ── SECTION LABEL ── */
+        .sl { font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin: 20px 0 9px; }
+
+        /* ── METRIC GRID ── */
+        .metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+        .metric-card { background: var(--gold-dim); border: 1px solid rgba(201,169,110,0.16); border-radius: 12px; padding: 18px; transition: border-color 0.2s; }
+        .metric-card:hover { border-color: rgba(201,169,110,0.4); }
+        .metric-value { font-size: 1.9rem; font-weight: 800; color: var(--gold); line-height: 1; }
+        .metric-label { font-size: 0.68rem; color: rgba(255,255,255,0.4); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.1em; }
+
+        /* ── SKILL TAGS ── */
+        .tag { display: inline-block; padding: 5px 13px; border-radius: 100px; border: 1px solid rgba(201,169,110,0.26); color: var(--gold); font-size: 0.7rem; margin: 3px; letter-spacing: 0.05em; transition: all 0.18s; }
+        .tag:hover { background: var(--gold-dim); }
+
+        /* ── VIDEO BLOCK ── */
+        .video-block { width: 100%; aspect-ratio: 16/9; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; overflow: hidden; margin: 14px 0; }
+        .video-block iframe { width: 100%; height: 100%; border: none; }
+        .video-ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; color: rgba(255,255,255,0.2); font-size: 0.75rem; cursor: pointer; transition: color 0.25s; }
+        .video-ph:hover { color: var(--gold); }
+        .video-ph .play { font-size: 1.8rem; }
+
+        /* ── REEL GRID (vertical 9:16) ── */
+        .reel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
+        .reel-wrap {
+            aspect-ratio: 9/16; border-radius: 10px; overflow: hidden;
+            background: #000; position: relative; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.07);
+            transition: border-color 0.2s;
+        }
+        .reel-wrap:hover { border-color: rgba(249,115,22,0.5); }
+        .reel-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .reel-wrap .reel-icon {
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: rgba(255,255,255,0.5); pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .reel-wrap.playing .reel-icon { opacity: 0; }
+
+        /* ── IMAGE GRID ── */
+        .img-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 16px 0; }
+        .img-slot { aspect-ratio: 4/3; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 9px; overflow: hidden; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.18); font-size: 0.68rem; }
+        .img-slot img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* ── CONTACT LINK ── */
+        .clink { display: flex; align-items: center; gap: 13px; padding: 16px 20px; border: 1px solid rgba(201,169,110,0.16); border-radius: 12px; color: #fff; text-decoration: none; transition: all 0.22s; margin-bottom: 10px; }
+        .clink:hover { border-color: rgba(201,169,110,0.5); background: var(--gold-dim); }
+        .cicon { color: var(--gold); font-size: 1rem; min-width: 18px; }
+
+        /* ── TOOLTIP ── */
+        .tooltip { position: fixed; padding: 7px 13px; background: rgba(8,8,22,0.96); border: 1px solid rgba(201,169,110,0.28); border-radius: 7px; font-size: 0.72rem; color: rgba(255,255,255,0.65); pointer-events: none; opacity: 0; transition: opacity 0.18s; z-index: 130; }
+
+        /* ── SUB-NODE LEGEND ── */
+        .subnote { font-size: 0.7rem; color: rgba(255,255,255,0.3); margin-top: 18px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,0.06); }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="logo">Catalina Pla</div>
+    <button id="langBtn" onclick="toggleLang()" style="background:transparent;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.55);border-radius:6px;padding:4px 12px;font-size:0.65rem;letter-spacing:0.18em;cursor:pointer;font-family:inherit;transition:all 0.2s;margin-left:12px" onmouseover="this.style.borderColor='rgba(201,169,110,0.5)';this.style.color='rgba(201,169,110,0.9)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.18)';this.style.color='rgba(255,255,255,0.55)'">EN</button>
+    <div class="badge" id="badgeEl">Portfolio Privado</div>
+</header>
+
+<div id="universe"></div>
+<div class="hint" id="hintEl">Explora los nodos — click para ver más</div>
+<div class="overlay" id="overlay"></div>
+
+<div class="panel" id="panel">
+    <button class="panel-close" id="panelClose">✕</button>
+    <div class="panel-tag" id="panelTag"></div>
+    <div class="panel-title" id="panelTitle"></div>
+    <div class="panel-body" id="panelBody"></div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════
+//  PORTFOLIO DATA — Catalina Pla
+//  Última actualización: Abril 2026
+// ═══════════════════════════════════════════════════════
+
+const NODES = [
+    // ── CENTRO ──
+    {
+        id: "catalina", label: "CATALINA", sublabel: "PLA",
+        type: "center", size: 62, color: "#ffffff",
+        content: {
+            tag: "Portfolio Privado · Abril 2026",
+            title: "Ads Manager · Marketing · Producción · Dirección Audiovisual",
+            body: `
+                <p>Soy Catalina, y combino estrategia, creatividad y ejecución en un solo perfil. Gestiono campañas publicitarias, construyo presencia digital y produzco contenido audiovisual — todo bajo la misma visión.</p>
+                <div style="margin:22px 0;padding:18px;border:1px solid rgba(201,169,110,0.18);border-radius:12px;background:rgba(201,169,110,0.05)">
+                    <div style="color:#fff;font-weight:600;margin-bottom:5px">Disponible para proyectos selectos</div>
+                    <div style="color:rgba(255,255,255,0.4);font-size:0.82rem">Disponible para proyectos freelance · Santiago, Chile</div>
+                </div>
+                <div class="sl">Áreas</div>
+                <div>
+                    <span class="tag">Publicidad Digital</span>
+                    <span class="tag">Redes Sociales</span>
+                    <span class="tag">Creación Web</span>
+                    <span class="tag">Producción</span>
+                    <span class="tag">Dirección Audiovisual</span>
+                    <span class="tag">Fotografía</span>
+                </div>
+                <div class="sl">Formación</div>
+                <p style="font-size:0.88rem;color:rgba(255,255,255,0.55)">Dirección Audiovisual & Comunicaciones<br>
+                <span style="color:var(--gold);font-weight:600">Pontificia Universidad Católica de Chile</span></p>
+            `
+        }
+    },
+
+    // ── MARKETING DIGITAL (nodo principal) ──
+    {
+        id: "mkt", label: "Marketing", sublabel: "Digital",
+        type: "node", size: 46, color: "#3b82f6",
+        content: {
+            tag: "Estrategia Digital",
+            title: "Marketing Digital",
+            body: `
+                <p>Estrategia y ejecución 360° — desde la campaña de pago hasta la presencia orgánica y la web. Estos son los tres pilares de mi trabajo digital:</p>
+                <div class="sl">Dentro de este universo</div>
+                <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+                    <div style="padding:14px 18px;border:1px solid rgba(124,111,224,0.3);border-radius:10px;background:rgba(124,111,224,0.05)">
+                        <div style="font-weight:600;color:#fff;margin-bottom:3px">📣 Publicidad</div>
+                        <div style="font-size:0.82rem;color:rgba(255,255,255,0.45)">Meta · Google · TikTok · LinkedIn Ads — campañas y métricas</div>
+                    </div>
+                    <div style="padding:14px 18px;border:1px solid rgba(124,111,224,0.3);border-radius:10px;background:rgba(124,111,224,0.05)">
+                        <div style="font-weight:600;color:#fff;margin-bottom:3px">📱 Redes Sociales</div>
+                        <div style="font-size:0.82rem;color:rgba(255,255,255,0.45)">Estrategia orgánica, reels, crecimiento y mentoría</div>
+                    </div>
+                    <div style="padding:14px 18px;border:1px solid rgba(124,111,224,0.3);border-radius:10px;background:rgba(124,111,224,0.05)">
+                        <div style="font-weight:600;color:#fff;margin-bottom:3px">🌐 Web</div>
+                        <div style="font-size:0.82rem;color:rgba(255,255,255,0.45)">Creación de páginas web y tiendas online</div>
+                    </div>
+                </div>
+                <div class="subnote">Explora los tres sub-nodos conectados a este para ver el detalle de cada área.</div>
+            `
+        }
+    },
+
+    // ── SUB-NODOS DE MARKETING DIGITAL ──
+    {
+        id: "publicidad", label: "Publicidad",
+        type: "subnode", size: 31, color: "#93c5fd",
+        content: {
+            tag: "Paid Media",
+            title: "Publicidad Digital",
+            body: `
+                <p>Gestión de campañas en las principales plataformas publicitarias. Desde la estrategia hasta la optimización y el reporte de resultados.</p>
+                <div class="sl">Plataformas</div>
+                <div>
+                    <span class="tag">Meta Ads</span>
+                    <span class="tag">Google Ads</span>
+                    <span class="tag">TikTok Ads</span>
+                    <span class="tag">LinkedIn Ads</span>
+                </div>
+                <div class="sl">Qué hago</div>
+                <p>Diseño y configuración de campañas, segmentación de audiencias, A/B testing de creatividades, optimización de presupuesto y reporting de métricas clave (ROAS, CPM, CTR, CPA).</p>
+                <div class="sl">Campañas reales — métricas</div>
+                <div style="display:flex;flex-direction:column;gap:10px;margin:10px 0">
+                    <div style="font-size:0.68rem;color:rgba(255,255,255,0.25);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:2px">Meta Ads Manager</div>
+                    <a href="images/ads_meta_conversiones.png" target="_blank" style="display:block;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);transition:border-color 0.2s;text-decoration:none" onmouseover="this.style.borderColor='rgba(201,169,110,0.45)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+                        <img src="images/ads_meta_conversiones.png" alt="Meta Ads – Conversiones" style="width:100%;display:block;">
+                        <div style="padding:7px 12px;font-size:0.68rem;color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.03)">Conversiones · 234 compras · ROAS 4.2× · CTR 2,80%</div>
+                    </a>
+                    <a href="images/ads_meta_trafico.png" target="_blank" style="display:block;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);transition:border-color 0.2s;text-decoration:none" onmouseover="this.style.borderColor='rgba(201,169,110,0.45)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+                        <img src="images/ads_meta_trafico.png" alt="Meta Ads – Tráfico" style="width:100%;display:block;">
+                        <div style="padding:7px 12px;font-size:0.68rem;color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.03)">Tráfico · Rendimiento mensual en alza · 4.521 clics · $70.000/día</div>
+                    </a>
+                    <div style="font-size:0.68rem;color:rgba(255,255,255,0.25);letter-spacing:0.12em;text-transform:uppercase;margin:6px 0 2px">Google Ads</div>
+                    <a href="images/ads_google_busqueda.png" target="_blank" style="display:block;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);transition:border-color 0.2s;text-decoration:none" onmouseover="this.style.borderColor='rgba(201,169,110,0.45)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+                        <img src="images/ads_google_busqueda.png" alt="Google Ads – Búsqueda" style="width:100%;display:block;">
+                        <div style="padding:7px 12px;font-size:0.68rem;color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.03)">Búsqueda · CTR 6,65% · 127 conversiones · CPC $1.420 · $90.000/día</div>
+                    </a>
+                </div>
+            `
+        }
+    },
+    {
+        id: "rrss", label: "RRSS",
+        type: "subnode", size: 31, color: "#93c5fd",
+        content: {
+            tag: "Redes Sociales",
+            title: "Social Media Strategy",
+            body: `
+                <p>Oriento a marcas y personas a entender cómo funciona el algoritmo y construir presencia real. Mi enfoque es estratégico.</p>
+                <div class="sl">Qué ofrezco</div>
+                <p>Mentoría en redes, análisis de métricas y producción de reels.</p>
+                <div class="sl">Métricas que manejo</div>
+                <div>
+                    <span class="tag">Alcance</span>
+                    <span class="tag">Engagement Rate</span>
+                    <span class="tag">Crecimiento de seguidores</span>
+                    <span class="tag">Impresiones</span>
+                </div>
+                <img src="images/metricas_rrss.jpeg" alt="Métricas Instagram" style="width:55%;border-radius:10px;margin:8px 0 4px;border:1px solid rgba(255,255,255,0.08);display:block">
+                <div class="sl">Reels</div>
+                <div class="reel-grid" id="reelGrid">
+                    <div class="reel-wrap" data-src="videos/reel_infraganti.mp4">
+                        <video playsinline muted loop preload="metadata"><source src="videos/reel_infraganti.mp4" type="video/mp4"></video>
+                        <div class="reel-icon">▶</div>
+                    </div>
+                    <div class="reel-wrap" data-src="videos/reel_sour.mp4">
+                        <video playsinline muted loop preload="metadata"><source src="videos/reel_sour.mp4" type="video/mp4"></video>
+                        <div class="reel-icon">▶</div>
+                    </div>
+                    <div class="reel-wrap" data-src="videos/reel1.mp4">
+                        <video playsinline muted loop preload="metadata"><source src="videos/reel1.mp4" type="video/mp4"></video>
+                        <div class="reel-icon">▶</div>
+                    </div>
+                    <div class="reel-wrap" data-src="videos/reel2.mp4">
+                        <video playsinline muted loop preload="metadata"><source src="videos/reel2.mp4" type="video/mp4"></video>
+                        <div class="reel-icon">▶</div>
+                    </div>
+                </div>
+            `
+        }
+    },
+    {
+        id: "web", label: "Web",
+        type: "subnode", size: 28, color: "#93c5fd",
+        content: {
+            tag: "Creación Web",
+            title: "Diseño & Creación Web",
+            body: `
+                <p>Creo páginas web y tiendas online funcionales, con buena presencia visual y optimizadas para convertir. Trabajo con las plataformas más utilizadas del mercado.</p>
+                <div class="sl">Herramientas</div>
+                <div>
+                    <span class="tag">Shopify</span>
+                    <span class="tag">GitHub</span>
+                </div>
+                <div class="sl">Proyectos web</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;margin:10px 0;height:340px">
+                    <img src="images/web_altiro.png" alt="Altiro" style="grid-row:1/3;width:100%;height:100%;object-fit:cover;object-position:center 75%;border-radius:10px;border:1px solid rgba(255,255,255,0.08)">
+                    <img src="images/web_finanzas.png" alt="Finanzas" style="width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,0.08)">
+                    <img src="images/web_taller.png" alt="El Taller" style="width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,0.08)">
+                </div>
+            `
+        }
+    },
+
+    // ── PRODUCCIÓN ──
+    {
+        id: "produccion", label: "Producción",
+        type: "node", size: 40, color: "#3b82f6",
+        content: {
+            tag: "Eventos & Producción",
+            title: "Producción",
+            body: `
+                <p>Experiencia en producción de eventos y gestión de proyectos en entornos de alta demanda. Sé organizar, ejecutar y resolver en tiempo real.</p>
+                <div class="sl">In Fraganti — Barra Móvil</div>
+                <div style="margin-top:6px;padding:18px;border:1px solid rgba(76,175,142,0.25);border-radius:12px;background:rgba(76,175,142,0.05)">
+                    <div style="font-weight:600;color:#fff;margin-bottom:6px">Cofundadora · 2024 — Presente</div>
+                    <p style="font-size:0.87rem">Cofundé una barra móvil de cócteles para eventos privados. Gestión completa: logística, atención al cliente, producción de contenido y estrategia de marca en redes.</p>
+                </div>
+                <div class="sl">Producción audiovisual</div>
+                <p style="font-size:0.87rem">Práctica universitaria en <strong style="color:#fff">2326Kino</strong> — preproducción, distribución y coordinación de proyectos audiovisuales.</p>
+                <div class="sl">Habilidades de producción</div>
+                <div>
+                    <span class="tag">Gestión de Eventos</span>
+                    <span class="tag">Logística</span>
+                    <span class="tag">Coordinación</span>
+                    <span class="tag">Atención al Cliente</span>
+                    <span class="tag">Preproducción</span>
+                </div>
+            `
+        }
+    },
+
+    // ── AUDIOVISUAL ──
+    {
+        id: "audiovisual", label: "Audiovisual",
+        type: "node", size: 40, color: "#3b82f6",
+        content: {
+            tag: "Dirección Audiovisual",
+            title: "Producción Audiovisual",
+            body: `
+                <p>Formada en Dirección Audiovisual en la PUC. Produzco, dirijo, filmo y edito.</p>
+                <div class="sl">Fotografía</div>
+                <div style="columns:2;column-gap:6px;margin:10px 0">
+                    <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                        <img src="images/foto_retrato_viejo.jpg" style="width:100%;display:block">
+                    </div>
+                    <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                        <img src="images/foto_reportaje_byn.jpg" style="width:100%;display:block">
+                    </div>
+                    <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                        <img src="images/foto_pelo_viento.jpg" style="width:100%;display:block">
+                    </div>
+                    <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                        <img src="images/foto_ola.jpg" style="width:100%;display:block">
+                    </div>
+                    <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                        <img src="images/foto_lentes.jpg" style="width:100%;display:block">
+                    </div>
+                    <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                        <img src="images/foto_neon.jpg" style="width:100%;display:block">
+                    </div>
+                    <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                        <img src="images/foto_puente.jpg" style="width:100%;display:block">
+                    </div>
+                    <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                        <img src="images/foto_evento.jpg" style="width:100%;display:block">
+                    </div>
+                    <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                        <img src="images/foto_evento2.jpg" style="width:100%;display:block">
+                    </div>
+                </div>
+                <div class="sl">Habilidades</div>
+                <div>
+                    <span class="tag">Edición de Video</span>
+                    <span class="tag">Premiere Pro</span>
+                    <span class="tag">CapCut</span>
+                    <span class="tag">Fotografía</span>
+                    <span class="tag">Operación de Cámara</span>
+                    <span class="tag">Dirección</span>
+                </div>
+                <div class="sl">Experiencia</div>
+                <p style="font-size:0.87rem">Editora de Video en <strong style="color:#fff">Facultad de Medicina UC</strong> — producción ejecutiva y edición de cortometrajes universitarios (2023).</p>
+            `
+        }
+    },
+
+    // ── HABILIDADES ──
+    {
+        id: "skills", label: "Habilidades",
+        type: "node", size: 36, color: "#f97316",
+        content: {
+            tag: "Stack & Tools",
+            title: "Habilidades & Herramientas",
+            body: `
+                <div class="sl">Inteligencia Artificial</div>
+                <div><span class="tag">ChatGPT</span><span class="tag">Gemini</span><span class="tag">Claude</span></div>
+
+                <div class="sl">Publicidad Digital</div>
+                <div><span class="tag">Meta Ads</span><span class="tag">Google Ads</span><span class="tag">TikTok Ads</span><span class="tag">LinkedIn Ads</span></div>
+
+                <div class="sl">Creación & Edición</div>
+                <div><span class="tag">Canva</span><span class="tag">Premiere Pro</span><span class="tag">CapCut</span></div>
+
+                <div class="sl">Web & E-commerce</div>
+                <div><span class="tag">Shopify</span><span class="tag">GitHub</span></div>
+
+                <div class="sl">Productividad</div>
+                <div><span class="tag">Notion</span><span class="tag">Microsoft Office</span><span class="tag">Google Workspace</span></div>
+
+                <div class="sl">Idiomas</div>
+                <div><span class="tag">Español Nativo</span><span class="tag">Inglés Avanzado</span></div>
+            `
+        }
+    },
+
+    // ── CONTACTO ──
+    {
+        id: "contacto", label: "Contacto",
+        type: "node", size: 30, color: "#f97316",
+        content: {
+            tag: "Conectemos",
+            title: "¿Trabajamos juntos?",
+            body: `
+                <p>Si llegaste hasta aquí, ya sé que somos compatibles. Cuéntame tu proyecto.</p>
+                <div style="margin-top:26px">
+                    <a href="mailto:cataplab21@yahoo.com" class="clink">
+                        <span class="cicon">✉</span>
+                        <div>
+                            <div style="font-size:0.72rem;color:rgba(255,255,255,0.38);margin-bottom:2px">Email</div>
+                            <div>cataplab21@yahoo.com</div>
+                        </div>
+                    </a>
+                    <a href="https://wa.me/56957836081" class="clink" target="_blank">
+                        <span class="cicon">📱</span>
+                        <div>
+                            <div style="font-size:0.72rem;color:rgba(255,255,255,0.38);margin-bottom:2px">WhatsApp</div>
+                            <div>+56 9 5783 6081</div>
+                        </div>
+                    </a>
+                </div>
+                <p style="margin-top:20px;font-size:0.78rem;color:rgba(255,255,255,0.28)">Santiago, Chile · Remoto disponible</p>
+            `
+        }
+    }
+];
+
+const LINKS = [
+    // Catalina → nodos principales
+    { source: "catalina", target: "mkt",        type: "main" },
+    { source: "catalina", target: "produccion",  type: "main" },
+    { source: "catalina", target: "audiovisual", type: "main" },
+    { source: "catalina", target: "skills",      type: "main" },
+    { source: "catalina", target: "contacto",    type: "main" },
+    // Marketing Digital → sub-nodos
+    { source: "mkt", target: "publicidad", type: "sub" },
+    { source: "mkt", target: "rrss",       type: "sub" },
+    { source: "mkt", target: "web",        type: "sub" },
+    // Conexiones cruzadas suaves
+    { source: "audiovisual", target: "produccion", type: "cross" },
+    { source: "skills",      target: "publicidad", type: "cross" },
+];
+
+// ═══════════════════════════════════════════════════════
+//  VISUALIZATION
+// ═══════════════════════════════════════════════════════
+let W = window.innerWidth, H = window.innerHeight;
+
+const svg = d3.select("#universe").append("svg").attr("width", W).attr("height", H);
+
+// ── Defs
+const defs = svg.append("defs");
+
+const glow = defs.append("filter").attr("id", "glow").attr("x", "-60%").attr("y", "-60%").attr("width", "220%").attr("height", "220%");
+glow.append("feGaussianBlur").attr("in", "SourceGraphic").attr("stdDeviation", "7").attr("result", "blur");
+const gm = glow.append("feMerge");
+gm.append("feMergeNode").attr("in", "blur");
+gm.append("feMergeNode").attr("in", "SourceGraphic");
+
+const glowS = defs.append("filter").attr("id", "glowS");
+glowS.append("feGaussianBlur").attr("in", "SourceGraphic").attr("stdDeviation", "2.5").attr("result", "blur");
+const gmS = glowS.append("feMerge");
+gmS.append("feMergeNode").attr("in", "blur");
+gmS.append("feMergeNode").attr("in", "SourceGraphic");
+
+// ── Stars
+const starG = svg.append("g");
+for (let i = 0; i < 130; i++) {
+    const r = Math.random();
+    starG.append("circle")
+        .attr("cx", Math.random() * W).attr("cy", Math.random() * H)
+        .attr("r", r * 1.3 + 0.15)
+        .attr("fill", `rgba(255,255,255,${r * 0.3 + 0.04})`);
+}
+
+// ── Simulation
+const sim = d3.forceSimulation(NODES)
+    .force("link", d3.forceLink(LINKS).id(d => d.id)
+        .distance(d => {
+            if (d.type === "sub")   return 130;
+            if (d.type === "cross") return 200;
+            return 230;
+        })
+        .strength(d => d.type === "sub" ? 0.8 : d.type === "cross" ? 0.1 : 0.4)
+    )
+    .force("charge", d3.forceManyBody().strength(d => d.type === "subnode" ? -120 : -480))
+    .force("center", d3.forceCenter(W / 2, H / 2))
+    .force("collide", d3.forceCollide().radius(d => d.size + (d.type === "subnode" ? 18 : 26)).strength(0.85));
+
+// ── Link layer
+const linkG = svg.append("g");
+const linkEl = linkG.selectAll("line").data(LINKS).enter().append("line")
+    .attr("stroke", d => {
+        const src = NODES.find(n => n.id === (d.source.id || d.source));
+        return src ? src.color : "#444";
+    })
+    .attr("stroke-opacity", d => d.type === "sub" ? 0.35 : d.type === "cross" ? 0.08 : 0.16)
+    .attr("stroke-width", d => d.type === "sub" ? 1.8 : 1.2)
+    .attr("stroke-dasharray", d => d.type === "cross" ? "3 6" : null)
+    .attr("filter", "url(#glowS)");
+
+// ── Node groups
+const nodeG = svg.append("g");
+const nodeEl = nodeG.selectAll("g").data(NODES).enter().append("g")
+    .attr("cursor", "pointer")
+    .call(d3.drag()
+        .on("start", (e, d) => { if (!e.active) sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+        .on("drag",  (e, d) => { d.fx = e.x; d.fy = e.y; })
+        .on("end",   (e, d) => { if (!e.active) sim.alphaTarget(0); d.fx = null; d.fy = null; })
+    )
+    .on("click",      (e, d) => openPanel(d))
+    .on("mouseenter", (e, d) => showTooltip(e, d))
+    .on("mousemove",  (e)    => moveTooltip(e))
+    .on("mouseleave", ()     => hideTooltip());
+
+// Outer ring
+nodeEl.append("circle").attr("class", "ring")
+    .attr("r", d => d.size + (d.type === "center" ? 16 : d.type === "subnode" ? 8 : 13))
+    .attr("fill", "none")
+    .attr("stroke", d => d.color)
+    .attr("stroke-opacity", d => d.type === "center" ? 0.2 : 0.06)
+    .attr("stroke-width", d => d.type === "center" ? 1.5 : 1);
+
+// Dashed outer ring for center
+nodeEl.filter(d => d.type === "center").append("circle")
+    .attr("r", d => d.size + 34)
+    .attr("fill", "none")
+    .attr("stroke", d => d.color)
+    .attr("stroke-opacity", 0.07)
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", "5 10");
+
+// Main circle
+nodeEl.append("circle").attr("class", "main")
+    .attr("r", d => d.size)
+    .attr("fill", d => d.type === "center" ? d.color : d.type === "subnode" ? `rgba(8,8,22,0.92)` : "rgba(8,8,22,0.95)")
+    .attr("stroke", d => d.color)
+    .attr("stroke-width", d => d.type === "center" ? 2.5 : d.type === "subnode" ? 1 : 1.5)
+    .attr("stroke-opacity", d => d.type === "center" ? 1 : d.type === "subnode" ? 0.5 : 0.7)
+    .attr("filter", d => d.type === "center" ? "url(#glow)" : null);
+
+// Main label
+nodeEl.append("text")
+    .attr("text-anchor", "middle")
+    .attr("fill", d => d.type === "center" ? "#05050f" : "#fff")
+    .attr("font-size", d => d.type === "center" ? "11px" : d.type === "subnode" ? "9.5px" : "10.5px")
+    .attr("font-weight", "700")
+    .attr("letter-spacing", "0.1em")
+    .attr("pointer-events", "none")
+    .attr("y", d => d.sublabel ? "-6" : "0")
+    .attr("dominant-baseline", "middle")
+    .text(d => d.label);
+
+// Sub-label (for nodes with two-line text)
+nodeEl.filter(d => d.sublabel).append("text")
+    .attr("text-anchor", "middle")
+    .attr("dominant-baseline", "middle")
+    .attr("y", d => d.type === "center" ? 9 : 8)
+    .attr("fill", d => d.type === "center" ? "rgba(5,5,15,0.6)" : "rgba(255,255,255,0.55)")
+    .attr("font-size", d => d.type === "center" ? "11px" : "9px")
+    .attr("font-weight", d => d.type === "center" ? "700" : "500")
+    .attr("letter-spacing", "0.1em")
+    .attr("pointer-events", "none")
+    .text(d => d.sublabel);
+
+// Hover
+nodeEl
+    .on("mouseenter.hover", function(e, d) {
+        d3.select(this).select(".main")
+            .transition().duration(160).attr("r", d.size + 4).attr("stroke-opacity", 1);
+        d3.select(this).select(".ring")
+            .transition().duration(160).attr("stroke-opacity", d.type === "center" ? 0.38 : 0.22);
+    })
+    .on("mouseleave.hover", function(e, d) {
+        d3.select(this).select(".main")
+            .transition().duration(220).attr("r", d.size)
+            .attr("stroke-opacity", d.type === "center" ? 1 : d.type === "subnode" ? 0.5 : 0.7);
+        d3.select(this).select(".ring")
+            .transition().duration(220).attr("stroke-opacity", d.type === "center" ? 0.2 : 0.06);
+    });
+
+// ── Tick
+sim.on("tick", () => {
+    // Keep all nodes within visible bounds
+    NODES.forEach(d => {
+        const pad = d.size + 14;
+        d.x = Math.max(pad, Math.min(W - pad, d.x));
+        d.y = Math.max(pad + 55, Math.min(H - pad - 30, d.y));
+    });
+    linkEl
+        .attr("x1", d => d.source.x).attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
+    nodeEl.attr("transform", d => `translate(${d.x},${d.y})`);
+});
+
+// ── Tooltip
+const tooltip = document.getElementById("tooltip");
+function showTooltip(e, d) {
+    if (d.type === "center") return;
+    tooltip.textContent = d.content.tag;
+    tooltip.style.opacity = "1";
+    moveTooltip(e);
+}
+function moveTooltip(e) {
+    tooltip.style.left = (e.clientX + 16) + "px";
+    tooltip.style.top  = (e.clientY - 10) + "px";
+}
+function hideTooltip() { tooltip.style.opacity = "0"; }
+
+// ── Panel
+const panel   = document.getElementById("panel");
+const overlay = document.getElementById("overlay");
+
+function openPanel(d) {
+    currentNode = d;
+    const c = (currentLang === 'en' && CONTENT_EN[d.id]) ? CONTENT_EN[d.id] : d.content;
+    document.getElementById("panelTag").textContent  = c.tag;
+    document.getElementById("panelTitle").textContent = c.title;
+    document.getElementById("panelBody").innerHTML    = c.body;
+    panel.classList.add("open");
+    overlay.classList.add("visible");
+    nodeEl.select(".ring").attr("stroke-opacity", n =>
+        n.id === d.id ? 0.5 : n.type === "center" ? 0.2 : 0.06
+    );
+
+    // ── Reel interactions (hover = muted autoplay, click = sound + pause others)
+    const reelGrid = document.getElementById("reelGrid");
+    if (reelGrid) {
+        const wraps = reelGrid.querySelectorAll(".reel-wrap");
+        wraps.forEach(wrap => {
+            const vid = wrap.querySelector("video");
+
+            wrap.addEventListener("mouseenter", () => {
+                vid.muted = true;
+                vid.play().catch(() => {});
+                wrap.classList.add("playing");
+            });
+
+            wrap.addEventListener("mouseleave", () => {
+                if (vid.muted) {
+                    vid.pause();
+                    vid.currentTime = 0;
+                    wrap.classList.remove("playing");
+                }
+            });
+
+            wrap.addEventListener("click", () => {
+                // Pause & mute all others
+                wraps.forEach(other => {
+                    if (other !== wrap) {
+                        const ov = other.querySelector("video");
+                        ov.pause();
+                        ov.muted = true;
+                        ov.currentTime = 0;
+                        other.classList.remove("playing");
+                    }
+                });
+                // Play this one with sound
+                vid.muted = false;
+                vid.loop = false;
+                vid.play().catch(() => {});
+                wrap.classList.add("playing");
+            });
+        });
+    }
+}
+function closePanel() {
+    // Pause all videos when closing
+    panel.querySelectorAll("video").forEach(v => { v.pause(); v.currentTime = 0; });
+    panel.classList.remove("open");
+    overlay.classList.remove("visible");
+    nodeEl.select(".ring").attr("stroke-opacity", d => d.type === "center" ? 0.2 : 0.06);
+    currentNode = null;
+}
+
+document.getElementById("panelClose").addEventListener("click", closePanel);
+overlay.addEventListener("click", closePanel);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closePanel(); });
+
+// ── Resize
+window.addEventListener("resize", () => {
+    W = window.innerWidth; H = window.innerHeight;
+    svg.attr("width", W).attr("height", H);
+    sim.force("center", d3.forceCenter(W / 2, H / 2)).alpha(0.3).restart();
+});
+
+// ── Entry animation
+nodeEl.attr("opacity", 0).transition().duration(900).delay((d, i) => i * 100).attr("opacity", 1);
+linkEl.attr("opacity", 0).transition().duration(600).delay(600).attr("opacity", 1);
+
+// ═══════════════════════════════════════════════════════
+//  LANGUAGE TOGGLE — ES / EN
+// ═══════════════════════════════════════════════════════
+let currentLang = 'es';
+let currentNode = null;
+
+const UI_TRANS = {
+    es: { badge: 'Portfolio Privado', hint: 'Explora los nodos — click para ver más' },
+    en: { badge: 'Private Portfolio', hint: 'Explore the nodes — click to learn more' }
+};
+
+const LABEL_TRANS = {
+    publicidad: { es: 'Publicidad', en: 'Ads' },
+    rrss:       { es: 'RRSS',       en: 'Social' },
+    produccion: { es: 'Producción', en: 'Production' },
+    audiovisual:{ es: 'Audiovisual',en: 'Audiovisual' },
+    skills:     { es: 'Habilidades',en: 'Skills' },
+    contacto:   { es: 'Contacto',   en: 'Contact' },
+    mkt:        { es: 'Marketing',  en: 'Marketing' }
+};
+
+const CONTENT_EN = {
+    catalina: {
+        tag: "Private Portfolio · April 2026",
+        title: "Ads Manager · Marketing · Production · Audiovisual Direction",
+        body: `
+            <p>I'm Catalina — I combine strategy, creativity, and execution in a single profile. I manage ad campaigns, build digital presence, and produce audiovisual content, all under the same vision.</p>
+            <div style="margin:22px 0;padding:18px;border:1px solid rgba(201,169,110,0.18);border-radius:12px;background:rgba(201,169,110,0.05)">
+                <div style="color:#fff;font-weight:600;margin-bottom:5px">Available for select projects</div>
+                <div style="color:rgba(255,255,255,0.4);font-size:0.82rem">Available for freelance projects · Santiago, Chile</div>
+            </div>
+            <div class="sl">Areas</div>
+            <div>
+                <span class="tag">Digital Advertising</span>
+                <span class="tag">Social Media</span>
+                <span class="tag">Web Creation</span>
+                <span class="tag">Production</span>
+                <span class="tag">Audiovisual Direction</span>
+                <span class="tag">Photography</span>
+            </div>
+            <div class="sl">Education</div>
+            <p style="font-size:0.88rem;color:rgba(255,255,255,0.55)">Audiovisual Direction & Communications<br>
+            <span style="color:var(--gold);font-weight:600">Pontificia Universidad Católica de Chile</span></p>
+        `
+    },
+    mkt: {
+        tag: "Digital Strategy",
+        title: "Digital Marketing",
+        body: `
+            <p>360° strategy and execution — from paid campaigns to organic presence and web. These are the three pillars of my digital work:</p>
+            <div class="sl">Within this universe</div>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+                <div style="padding:14px 18px;border:1px solid rgba(124,111,224,0.3);border-radius:10px;background:rgba(124,111,224,0.05)">
+                    <div style="font-weight:600;color:#fff;margin-bottom:3px">📣 Advertising</div>
+                    <div style="font-size:0.82rem;color:rgba(255,255,255,0.45)">Meta · Google · TikTok · LinkedIn Ads — campaigns & metrics</div>
+                </div>
+                <div style="padding:14px 18px;border:1px solid rgba(124,111,224,0.3);border-radius:10px;background:rgba(124,111,224,0.05)">
+                    <div style="font-weight:600;color:#fff;margin-bottom:3px">📱 Social Media</div>
+                    <div style="font-size:0.82rem;color:rgba(255,255,255,0.45)">Organic strategy, reels, growth and mentoring</div>
+                </div>
+                <div style="padding:14px 18px;border:1px solid rgba(124,111,224,0.3);border-radius:10px;background:rgba(124,111,224,0.05)">
+                    <div style="font-weight:600;color:#fff;margin-bottom:3px">🌐 Web</div>
+                    <div style="font-size:0.82rem;color:rgba(255,255,255,0.45)">Website and online store creation</div>
+                </div>
+            </div>
+            <div class="subnote">Explore the three sub-nodes connected to this one to see each area in detail.</div>
+        `
+    },
+    publicidad: {
+        tag: "Paid Media",
+        title: "Digital Advertising",
+        body: `
+            <p>Campaign management across major advertising platforms — from strategy to optimization and results reporting.</p>
+            <div class="sl">Platforms</div>
+            <div>
+                <span class="tag">Meta Ads</span>
+                <span class="tag">Google Ads</span>
+                <span class="tag">TikTok Ads</span>
+                <span class="tag">LinkedIn Ads</span>
+            </div>
+            <div class="sl">What I do</div>
+            <p>Campaign design and setup, audience segmentation, creative A/B testing, budget optimization and KPI reporting (ROAS, CPM, CTR, CPA).</p>
+            <div class="sl">Real campaigns — metrics</div>
+            <div style="display:flex;flex-direction:column;gap:10px;margin:10px 0">
+                <div style="font-size:0.68rem;color:rgba(255,255,255,0.25);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:2px">Meta Ads Manager</div>
+                <a href="images/ads_meta_conversiones.png" target="_blank" style="display:block;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);transition:border-color 0.2s;text-decoration:none" onmouseover="this.style.borderColor='rgba(201,169,110,0.45)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+                    <img src="images/ads_meta_conversiones.png" alt="Meta Ads – Conversions" style="width:100%;display:block;">
+                    <div style="padding:7px 12px;font-size:0.68rem;color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.03)">Conversions · 234 purchases · ROAS 4.2× · CTR 2.80%</div>
+                </a>
+                <a href="images/ads_meta_trafico.png" target="_blank" style="display:block;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);transition:border-color 0.2s;text-decoration:none" onmouseover="this.style.borderColor='rgba(201,169,110,0.45)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+                    <img src="images/ads_meta_trafico.png" alt="Meta Ads – Traffic" style="width:100%;display:block;">
+                    <div style="padding:7px 12px;font-size:0.68rem;color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.03)">Traffic · Monthly performance rising · 4,521 clicks · $70,000/day</div>
+                </a>
+                <div style="font-size:0.68rem;color:rgba(255,255,255,0.25);letter-spacing:0.12em;text-transform:uppercase;margin:6px 0 2px">Google Ads</div>
+                <a href="images/ads_google_busqueda.png" target="_blank" style="display:block;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);transition:border-color 0.2s;text-decoration:none" onmouseover="this.style.borderColor='rgba(201,169,110,0.45)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.07)'">
+                    <img src="images/ads_google_busqueda.png" alt="Google Ads – Search" style="width:100%;display:block;">
+                    <div style="padding:7px 12px;font-size:0.68rem;color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.03)">Search · CTR 6.65% · 127 conversions · CPC $1,420 · $90,000/day</div>
+                </a>
+            </div>
+        `
+    },
+    rrss: {
+        tag: "Social Media",
+        title: "Social Media Strategy",
+        body: `
+            <p>I guide brands and individuals to understand how the algorithm works and build real presence. My approach is strategic.</p>
+            <div class="sl">What I offer</div>
+            <p>Social media mentoring, metrics analysis, and reel production.</p>
+            <div class="sl">Metrics I handle</div>
+            <div>
+                <span class="tag">Reach</span>
+                <span class="tag">Engagement Rate</span>
+                <span class="tag">Follower Growth</span>
+                <span class="tag">Impressions</span>
+            </div>
+            <img src="images/metricas_rrss.jpeg" alt="Instagram Metrics" style="width:55%;border-radius:10px;margin:8px 0 4px;border:1px solid rgba(255,255,255,0.08);display:block">
+            <div class="sl">Reels</div>
+            <div class="reel-grid" id="reelGrid">
+                <div class="reel-wrap" data-src="videos/reel_infraganti.mp4">
+                    <video playsinline muted loop preload="metadata"><source src="videos/reel_infraganti.mp4" type="video/mp4"></video>
+                    <div class="reel-icon">▶</div>
+                </div>
+                <div class="reel-wrap" data-src="videos/reel_sour.mp4">
+                    <video playsinline muted loop preload="metadata"><source src="videos/reel_sour.mp4" type="video/mp4"></video>
+                    <div class="reel-icon">▶</div>
+                </div>
+                <div class="reel-wrap" data-src="videos/reel1.mp4">
+                    <video playsinline muted loop preload="metadata"><source src="videos/reel1.mp4" type="video/mp4"></video>
+                    <div class="reel-icon">▶</div>
+                </div>
+                <div class="reel-wrap" data-src="videos/reel2.mp4">
+                    <video playsinline muted loop preload="metadata"><source src="videos/reel2.mp4" type="video/mp4"></video>
+                    <div class="reel-icon">▶</div>
+                </div>
+            </div>
+        `
+    },
+    web: {
+        tag: "Web Creation",
+        title: "Design & Web Creation",
+        body: `
+            <p>I build functional websites and online stores with strong visual presence, optimized to convert. I work with the most widely used platforms on the market.</p>
+            <div class="sl">Tools</div>
+            <div>
+                <span class="tag">Shopify</span>
+                <span class="tag">GitHub</span>
+            </div>
+            <div class="sl">Web projects</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;margin:10px 0;height:340px">
+                <img src="images/web_altiro.png" alt="Altiro" style="grid-row:1/3;width:100%;height:100%;object-fit:cover;object-position:center 75%;border-radius:10px;border:1px solid rgba(255,255,255,0.08)">
+                <img src="images/web_finanzas.png" alt="Finanzas" style="width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,0.08)">
+                <img src="images/web_taller.png" alt="El Taller" style="width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid rgba(255,255,255,0.08)">
+            </div>
+        `
+    },
+    produccion: {
+        tag: "Events & Production",
+        title: "Production",
+        body: `
+            <p>Experience in event production and project management in high-demand environments. I know how to organize, execute, and problem-solve in real time.</p>
+            <div class="sl">In Fraganti — Mobile Bar</div>
+            <div style="margin-top:6px;padding:18px;border:1px solid rgba(76,175,142,0.25);border-radius:12px;background:rgba(76,175,142,0.05)">
+                <div style="font-weight:600;color:#fff;margin-bottom:6px">Co-founder · 2024 — Present</div>
+                <p style="font-size:0.87rem">Co-founded a mobile cocktail bar for private events. Full management: logistics, client relations, content production and brand strategy on social media.</p>
+            </div>
+            <div class="sl">Audiovisual production</div>
+            <p style="font-size:0.87rem">University internship at <strong style="color:#fff">2326Kino</strong> — pre-production, distribution, and coordination of audiovisual projects.</p>
+            <div class="sl">Production skills</div>
+            <div>
+                <span class="tag">Event Management</span>
+                <span class="tag">Logistics</span>
+                <span class="tag">Coordination</span>
+                <span class="tag">Client Relations</span>
+                <span class="tag">Pre-production</span>
+            </div>
+        `
+    },
+    audiovisual: {
+        tag: "Audiovisual Direction",
+        title: "Audiovisual Production",
+        body: `
+            <p>Trained in Audiovisual Direction at PUC. I produce, direct, shoot, and edit.</p>
+            <div class="sl">Photography</div>
+            <div style="columns:2;column-gap:6px;margin:10px 0">
+                <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                    <img src="images/foto_retrato_viejo.jpg" style="width:100%;display:block">
+                </div>
+                <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                    <img src="images/foto_reportaje_byn.jpg" style="width:100%;display:block">
+                </div>
+                <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                    <img src="images/foto_pelo_viento.jpg" style="width:100%;display:block">
+                </div>
+                <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                    <img src="images/foto_ola.jpg" style="width:100%;display:block">
+                </div>
+                <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                    <img src="images/foto_lentes.jpg" style="width:100%;display:block">
+                </div>
+                <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                    <img src="images/foto_neon.jpg" style="width:100%;display:block">
+                </div>
+                <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                    <img src="images/foto_puente.jpg" style="width:100%;display:block">
+                </div>
+                <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                    <img src="images/foto_evento.jpg" style="width:100%;display:block">
+                </div>
+                <div style="border-radius:9px;overflow:hidden;margin-bottom:6px;break-inside:avoid">
+                    <img src="images/foto_evento2.jpg" style="width:100%;display:block">
+                </div>
+            </div>
+            <div class="sl">Skills</div>
+            <div>
+                <span class="tag">Video Editing</span>
+                <span class="tag">Premiere Pro</span>
+                <span class="tag">CapCut</span>
+                <span class="tag">Photography</span>
+                <span class="tag">Camera Operation</span>
+                <span class="tag">Direction</span>
+            </div>
+            <div class="sl">Experience</div>
+            <p style="font-size:0.87rem">Video Editor at <strong style="color:#fff">Facultad de Medicina UC</strong> — executive production and editing of university short films (2023).</p>
+        `
+    },
+    skills: {
+        tag: "Stack & Tools",
+        title: "Skills & Tools",
+        body: `
+            <div class="sl">Artificial Intelligence</div>
+            <div><span class="tag">ChatGPT</span><span class="tag">Gemini</span><span class="tag">Claude</span></div>
+
+            <div class="sl">Digital Advertising</div>
+            <div><span class="tag">Meta Ads</span><span class="tag">Google Ads</span><span class="tag">TikTok Ads</span><span class="tag">LinkedIn Ads</span></div>
+
+            <div class="sl">Creation & Editing</div>
+            <div><span class="tag">Canva</span><span class="tag">Premiere Pro</span><span class="tag">CapCut</span></div>
+
+            <div class="sl">Web & E-commerce</div>
+            <div><span class="tag">Shopify</span><span class="tag">GitHub</span></div>
+
+            <div class="sl">Productivity</div>
+            <div><span class="tag">Notion</span><span class="tag">Microsoft Office</span><span class="tag">Google Workspace</span></div>
+
+            <div class="sl">Languages</div>
+            <div><span class="tag">Native Spanish</span><span class="tag">Advanced English</span></div>
+        `
+    },
+    contacto: {
+        tag: "Let's Connect",
+        title: "Work Together?",
+        body: `
+            <p>If you made it here, I already know we're a good fit. Tell me about your project.</p>
+            <div style="margin-top:26px">
+                <a href="mailto:cataplab21@yahoo.com" class="clink">
+                    <span class="cicon">✉</span>
+                    <div>
+                        <div style="font-size:0.72rem;color:rgba(255,255,255,0.38);margin-bottom:2px">Email</div>
+                        <div>cataplab21@yahoo.com</div>
+                    </div>
+                </a>
+                <a href="https://wa.me/15304162278" class="clink" target="_blank">
+                    <span class="cicon">📱</span>
+                    <div>
+                        <div style="font-size:0.72rem;color:rgba(255,255,255,0.38);margin-bottom:2px">Mobile</div>
+                        <div>+1 530 416 2278</div>
+                    </div>
+                </a>
+            </div>
+            <p style="margin-top:20px;font-size:0.78rem;color:rgba(255,255,255,0.28)">Santiago, Chile · Remote available</p>
+        `
+    }
+};
+
+function toggleLang() {
+    currentLang = currentLang === 'es' ? 'en' : 'es';
+    const btn = document.getElementById('langBtn');
+    btn.textContent = currentLang === 'es' ? 'EN' : 'ES';
+    document.getElementById('badgeEl').textContent = UI_TRANS[currentLang].badge;
+    document.getElementById('hintEl').textContent  = UI_TRANS[currentLang].hint;
+
+    // Update node circle labels
+    nodeEl.each(function(d) {
+        const t = LABEL_TRANS[d.id];
+        if (t) d3.select(this).select('text').text(t[currentLang]);
+    });
+
+    // Re-render panel if open
+    if (currentNode && panel.classList.contains('open')) {
+        const c = (currentLang === 'en' && CONTENT_EN[currentNode.id])
+            ? CONTENT_EN[currentNode.id]
+            : currentNode.content;
+        document.getElementById('panelTag').textContent   = c.tag;
+        document.getElementById('panelTitle').textContent = c.title;
+        document.getElementById('panelBody').innerHTML    = c.body;
+    }
+}
+</script>
+</body>
+</html>
