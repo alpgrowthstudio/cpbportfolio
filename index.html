@@ -65,9 +65,10 @@
             border-left: 1px solid rgba(201,169,110,0.15);
             z-index: 200;
             transition: right 0.52s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow-y: auto; padding: 68px 42px 50px;
+            overflow-y: scroll; padding: 68px 42px 50px;
             -webkit-overflow-scrolling: touch;
             overscroll-behavior: contain;
+            touch-action: pan-y;
             scrollbar-width: thin; scrollbar-color: rgba(201,169,110,0.18) transparent;
         }
         .panel.open { right: 0; }
@@ -668,8 +669,10 @@ function openPanel(d) {
     document.getElementById("panelTag").textContent  = c.tag;
     document.getElementById("panelTitle").textContent = c.title;
     document.getElementById("panelBody").innerHTML    = c.body;
+    panel.scrollTop = 0;
     panel.classList.add("open");
     overlay.classList.add("visible");
+    document.querySelector("svg").style.touchAction = "none";
     nodeEl.select(".ring").attr("stroke-opacity", n =>
         n.id === d.id ? 0.5 : n.type === "center" ? 0.2 : 0.06
     );
@@ -720,6 +723,7 @@ function closePanel() {
     panel.querySelectorAll("video").forEach(v => { v.pause(); v.currentTime = 0; });
     panel.classList.remove("open");
     overlay.classList.remove("visible");
+    document.querySelector("svg").style.touchAction = "";
     nodeEl.select(".ring").attr("stroke-opacity", d => d.type === "center" ? 0.2 : 0.06);
     currentNode = null;
 }
