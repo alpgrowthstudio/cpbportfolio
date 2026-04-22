@@ -61,9 +61,7 @@
         .panel {
             position: fixed; top: 0; right: -100%;
             width: min(560px, 100vw);
-            height: 100vh;
-            height: 100dvh;
-            height: -webkit-fill-available;
+            height: calc(var(--vh, 1vh) * 100);
             background: var(--surface);
             border-left: 1px solid rgba(201,169,110,0.15);
             z-index: 200;
@@ -736,6 +734,11 @@ function closePanel() {
 document.getElementById("panelClose").addEventListener("click", closePanel);
 overlay.addEventListener("click", closePanel);
 document.addEventListener("keydown", e => { if (e.key === "Escape") closePanel(); });
+
+// ── iOS viewport height fix
+const setVh = () => document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+setVh();
+window.addEventListener('resize', setVh);
 
 // ── iOS scroll fix
 let _touchStartY = 0;
